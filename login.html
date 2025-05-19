@@ -9,11 +9,11 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
     rel="stylesheet"
   />
-  <!-- Asegúrate de subir style.css?v=8 -->
+  <!-- Forzamos siempre v8 para forzar caché limpia -->
   <link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body>
-  <!-- Header -->
+  <!-- Header idéntico a index.html -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="logo-link">
@@ -73,7 +73,7 @@
   </div>
 
   <script>
-    // 1) Leer ?rol=Proveedor o ?rol=Administrador
+    // 1) Capturamos el rol que viene en la URL
     const params = new URLSearchParams(window.location.search);
     const role   = params.get('rol');
 
@@ -81,7 +81,7 @@
     const errorEl  = document.getElementById('loginError');
     const form     = document.getElementById('loginForm');
 
-    // 2) Validar rol
+    // 2) Si el rol es válido, ajustamos el título
     if (role === 'Proveedor' || role === 'Administrador') {
       titleEl.textContent = `Iniciar sesión – ${role}`;
     } else {
@@ -90,7 +90,7 @@
       form.querySelector('button').disabled = true;
     }
 
-    // 3) Envío demo
+    // 3) Demo de validación
     form.addEventListener('submit', e => {
       e.preventDefault();
       if (!role) return;
