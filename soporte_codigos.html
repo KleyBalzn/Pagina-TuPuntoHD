@@ -9,7 +9,7 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
   <header class="site-header">
@@ -47,6 +47,7 @@
   </main>
 
   <script>
+    const MAILNESIA_USER = 'tupuntohd'; // sin @mailnesia.com
     const btn      = document.getElementById('searchBtn');
     const input    = document.getElementById('emailInput');
     const spinner  = document.getElementById('spinner');
@@ -57,6 +58,7 @@
       const email = input.value.trim();
       resultEl.innerHTML = '';
 
+      // Validación de correo
       if (!email) {
         resultEl.innerHTML = '<div class="error">Por favor ingresa un correo.</div>';
         return;
@@ -66,29 +68,45 @@
         return;
       }
 
+      // Mostrar spinner
       btn.disabled = true;
       spinner.setAttribute('aria-hidden','false');
 
       try {
+        // 1) Obtengo todos los mensajes de Mailnesia
         const resp = await fetch(
-          'https://script.google.com/macros/s/AKfycbynueoC5J7O7hfRO9C1Q2wdPNdHgaXurOmfF9KPZfyBYg_OowJq2nHQEU2hLuA3JqTtrw/exec?email=' + encodeURIComponent(email)
+          `https://mailnesia.com/api/mailbox/${MAILNESIA_USER}`
         );
-        const data = await resp.json();
-
-        if (data.link) {
-          resultEl.innerHTML =
-            `<div class="result-card">
-               <a href="${data.link}" target="_blank" class="btn-primary">
-                 Ver mi código
-               </a>
-             </div>`;
-        } else {
-          resultEl.innerHTML =
-            `<div class="error">${data.error || 'No se encontró ningún enlace.'}</div>`;
+        if (!resp.ok) throw new Error('No se pudo conectar a Mailnesia');
+        const mails = await resp.json();
+        if (!mails.length) {
+          throw new Error('Aún no hay correos en Mailnesia');
         }
+
+        // 2) Filtrar por correo original dentro del HTML del mensaje
+        //    Si no coincide ninguno, tomamos el más reciente
+        const candidates = mails.filter(m =>
+          (m.html || '').includes(email)
+        );
+        const mail = candidates.length ? candidates[0] : mails[0];
+
+        // 3) Extraer la primera URL del contenido HTML
+        const content = mail.html || mail.body || '';
+        const match = content.match(/https?:\/\/[^\s"'<>]+/);
+        if (!match) {
+          throw new Error('No encontré ningún enlace en el correo.');
+        }
+
+        // 4) Mostrar el botón al usuario
+        resultEl.innerHTML =
+          `<div class="result-card">
+             <a href="${match[0]}" target="_blank" class="btn-primary">
+               Ver mi código
+             </a>
+           </div>`;
       } catch (err) {
         console.error(err);
-        resultEl.innerHTML = '<div class="error">Error de red. Intenta más tarde.</div>';
+        resultEl.innerHTML = `<div class="error">${err.message}</div>`;
       } finally {
         btn.disabled = false;
         spinner.setAttribute('aria-hidden','true');
