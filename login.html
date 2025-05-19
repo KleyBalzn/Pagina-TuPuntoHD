@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
-  <!-- Header idéntico al de index.html -->
+  <!-- Header igual que index.html -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="logo-link">
@@ -21,28 +21,31 @@
       <nav class="nav">
         <ul>
           <li><a href="index.html">INICIO</a></li>
-          <li>
-            <a href="#">STREAMING</a>
+          <li><a href="#">STREAMING</a>
             <ul class="dropdown">
               <li><a href="streaming_tienda.html">Tienda</a></li>
               <li><a href="soporte_codigos.html">Soporte Códigos</a></li>
             </ul>
           </li>
-          <li>
-            <a href="#">SIM RACING</a>
+          <li><a href="#">SIM RACING</a>
             <ul class="dropdown">
               <li><a href="sim_tienda.html">Tienda</a></li>
               <li><a href="reservas.html">Reservas</a></li>
             </ul>
           </li>
-          <li><a href="login.html">ACCEDER</a></li>
+          <li><a href="login.html?rol=Proveedor">ACCEDER</a>
+            <ul class="dropdown">
+              <li><a href="login.html?rol=Proveedor">Proveedor</a></li>
+              <li><a href="login.html?rol=Administrador">Administrador</a></li>
+            </ul>
+          </li>
           <li><a href="soporte.html">SOPORTE</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <!-- Contenedor del login -->
+  <!-- Login -->
   <div class="login-container">
     <div class="login-modal">
       <h2>Iniciar sesión</h2>
@@ -70,46 +73,53 @@
   </div>
 
   <script>
-    let role = "";
-    document.getElementById("providerBtn").addEventListener("click", () => {
-      role = "Proveedor";
-      highlightRole("providerBtn");
-    });
-    document.getElementById("adminBtn").addEventListener("click", () => {
-      role = "Administrador";
-      highlightRole("adminBtn");
-    });
+    // Lectura del parámetro ?rol=Proveedor o ?rol=Administrador
+    const params = new URLSearchParams(window.location.search);
+    const initialRole = params.get('rol');
 
-    function highlightRole(id) {
-      document
-        .querySelectorAll(".type-btn")
-        .forEach((btn) => btn.classList.remove("active"));
-      document.getElementById(id).classList.add("active");
-      document.getElementById("loginError").textContent = "";
+    const providerBtn = document.getElementById("providerBtn");
+    const adminBtn    = document.getElementById("adminBtn");
+    const loginError  = document.getElementById("loginError");
+
+    function highlightRole(btn) {
+      providerBtn.classList.remove("active");
+      adminBtn.classList.remove("active");
+      btn.classList.add("active");
+      loginError.textContent = "";
     }
 
+    // Botones de rol
+    providerBtn.addEventListener("click", () => highlightRole(providerBtn));
+    adminBtn.addEventListener("click", () => highlightRole(adminBtn));
+
+    // Si venimos con rol preseleccionado, lo activamos
+    if (initialRole === "Proveedor") {
+      highlightRole(providerBtn);
+    } else if (initialRole === "Administrador") {
+      highlightRole(adminBtn);
+    }
+
+    // Validación del formulario
     document.getElementById("loginForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("loginEmail").value.trim();
-      const pass = document.getElementById("loginPassword").value;
-      const errorEl = document.getElementById("loginError");
-      errorEl.textContent = "";
+      const pass  = document.getElementById("loginPassword").value;
+      const activeBtn = document.querySelector(".type-btn.active");
 
-      if (!role) {
-        errorEl.textContent = "Selecciona primero tu tipo de usuario.";
+      if (!activeBtn) {
+        loginError.textContent = "Selecciona primero tu tipo de usuario.";
         return;
       }
-      // TODO: Aquí llama a tu backend o Google Apps Script para validar credentials
-      // Demo de éxito/fallo:
-      if (email === "demo@tupuntohd.com" && pass === "demo123" && role) {
+      // DEMO: credenciales de prueba
+      if (email === "demo@tupuntohd.com" && pass === "demo123") {
         // Redirigir según rol
-        if (role === "Proveedor") {
+        if (activeBtn === providerBtn) {
           window.location.href = "proveedor.html";
         } else {
           window.location.href = "admin.html";
         }
       } else {
-        errorEl.textContent = "Credenciales inválidas. Intenta de nuevo.";
+        loginError.textContent = "Credenciales inválidas. Intenta de nuevo.";
       }
     });
   </script>
