@@ -1,3 +1,54 @@
 <!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Soporte Codigos</title><link rel="icon" href="assets/favicon.png"><link rel="stylesheet" href="style.css"></head>
-<body><header class="site-header"><div class="container"><a href="index.html"><img src="assets/logo.png" class="logo" alt="Logo"></a></div></header><main class="container"><h1>Soporte Codigos</h1><p>Contenido en desarrollo.</p></main></body></html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Soporte Códigos - TuPuntoHD</title>
+  <link rel="icon" href="assets/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="TuPuntoHD Logo" class="logo">
+      </a>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html">INICIO</a></li>
+          <li><a href="streaming_tienda.html">STREAMING</a></li>
+          <li><a href="#">SIM RACING</a></li>
+          <li><a href="#">ACCEDER</a></li>
+          <li><a href="soporte_codigos.html">SOPORTE CÓDIGOS</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+  <main class="container">
+    <section class="search-section">
+      <h3>Busca tu código de hogar</h3>
+      <div class="search-box">
+        <input type="email" id="emailInput" placeholder="Ingresa tu correo electrónico">
+        <button id="searchBtn">Buscar código</button>
+      </div>
+      <div id="searchResult"></div>
+    </section>
+  </main>
+  <script>
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      const email = document.getElementById('emailInput').value.trim();
+      const resultEl = document.getElementById('searchResult');
+      if (!email) {
+        resultEl.textContent = 'Por favor ingresa un correo.';
+        return;
+      }
+      resultEl.textContent = 'Buscando código más reciente para ' + email + '...';
+      // TODO: reemplazar con llamada real a backend
+      setTimeout(() => {
+        resultEl.textContent = 'Código encontrado: 1234';
+      }, 2000);
+    });
+  </script>
+</body>
+</html>
