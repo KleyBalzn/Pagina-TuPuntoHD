@@ -1,65 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Soporte Códigos – TuPuntoHD</title>
-  <base target="_top">
-  <style>
-    /* tu CSS mínimo aquí o vía style.css en GitHub */
-    body { font-family: sans-serif; background: #f9f9f9; padding: 20px; }
-    .spinner { display: inline-block; width:20px; height:20px; border:3px solid #eee; border-top-color:#0077cc; border-radius:50%; animation:spin .8s linear infinite; visibility:hidden; }
-    .spinner[aria-hidden="false"] { visibility:visible; }
-    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg);} }
-    .error { color:#d32f2f; margin-top:10px; }
-    .result-card { margin-top:15px; }
-    .btn-primary { background:#000; color:#fff; padding:10px 20px; text-decoration:none; border-radius:4px; }
-    .btn-primary:hover { background:#444; }
-  </style>
+  <link rel="icon" href="assets/favicon.png" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
-  <h3>Busca tu código de hogar</h3>
-  <input type="email" id="emailInput" placeholder="correo@ejemplo.com" style="padding:8px; width:250px;">
-  <button id="searchBtn" style="padding:8px 12px;">Buscar código</button>
-  <div id="spinner" class="spinner" aria-hidden="true"></div>
-  <div id="searchResult"></div>
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="TuPuntoHD Logo" class="logo" />
+      </a>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html">INICIO</a></li>
+          <li><a href="streaming_tienda.html">STREAMING</a></li>
+          <li><a href="sim_tienda.html">SIM RACING</a></li>
+          <li><a href="login.html?rol=Proveedor">ACCEDER</a></li>
+          <li><a href="soporte_codigos.html">SOPORTE CÓDIGOS</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="search-section">
+      <h3>Busca tu código de hogar</h3>
+      <div class="search-box">
+        <input
+          type="email"
+          id="emailInput"
+          placeholder="correo@ejemplo.com"
+          required
+        />
+        <button id="searchBtn">Buscar código</button>
+        <div id="spinner" class="spinner" aria-hidden="true"></div>
+      </div>
+      <div id="searchResult" class="search-result"></div>
+    </section>
+  </main>
 
   <script>
-    const btn = document.getElementById('searchBtn');
-    const input = document.getElementById('emailInput');
-    const spinner = document.getElementById('spinner');
+    const btn      = document.getElementById('searchBtn');
+    const input    = document.getElementById('emailInput');
+    const spinner  = document.getElementById('spinner');
     const resultEl = document.getElementById('searchResult');
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     btn.addEventListener('click', async () => {
       const email = input.value.trim();
       resultEl.innerHTML = '';
+
+      // Validación
       if (!email) {
-        return resultEl.innerHTML = '<div class="error">Por favor ingresa un correo.</div>';
+        resultEl.innerHTML = '<div class="error">Por favor ingresa un correo.</div>';
+        return;
       }
       if (!emailPattern.test(email)) {
-        return resultEl.innerHTML = '<div class="error">Formato de correo inválido.</div>';
+        resultEl.innerHTML = '<div class="error">Formato de correo inválido.</div>';
+        return;
       }
 
+      // UI de carga
       btn.disabled = true;
       spinner.setAttribute('aria-hidden','false');
 
       try {
-        // Aquí llamamos a la Web App con GET
-        const url = `${location.origin}${location.pathname}?email=${encodeURIComponent(email)}`;
-        const resp = await fetch(url, { method: 'GET' });
+        const resp = await fetch(
+          'https://script.google.com/macros/s/AKfycbynueoC5J7O7hfRO9C1Q2wdPNdHgaXurOmfF9KPZfyBYg_OowJq2nHQEU2hLuA3JqTtrw/exec?email='
+          + encodeURIComponent(email)
+        );
         const data = await resp.json();
 
         if (data.link) {
-          resultEl.innerHTML = `
-            <div class="result-card">
-              <a href="${data.link}" target="_blank" class="btn-primary">Ver mi código</a>
-            </div>`;
+          resultEl.innerHTML =
+            `<div class="result-card">
+               <a href="${data.link}" target="_blank" class="btn-primary">
+                 Ver mi código
+               </a>
+             </div>`;
         } else {
-          resultEl.innerHTML = `<div class="error">${data.error||'No se encontró ningún enlace.'}</div>`;
+          resultEl.innerHTML =
+            `<div class="error">${data.error || 'No se encontró ningún enlace.'}</div>`;
         }
       } catch (err) {
         console.error(err);
-        resultEl.innerHTML = `<div class="error">Error de red. Intenta más tarde.</div>`;
+        resultEl.innerHTML = '<div class="error">Error de red. Intenta más tarde.</div>';
       } finally {
         btn.disabled = false;
         spinner.setAttribute('aria-hidden','true');
