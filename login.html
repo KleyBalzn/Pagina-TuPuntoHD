@@ -9,10 +9,10 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="style.css?v=5" />
+  <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
-  <!-- Header igual que index.html -->
+  <!-- Header -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="logo-link">
@@ -21,19 +21,22 @@
       <nav class="nav">
         <ul>
           <li><a href="index.html">INICIO</a></li>
-          <li><a href="#">STREAMING</a>
+          <li>
+            <a href="#">STREAMING</a>
             <ul class="dropdown">
               <li><a href="streaming_tienda.html">Tienda</a></li>
               <li><a href="soporte_codigos.html">Soporte Códigos</a></li>
             </ul>
           </li>
-          <li><a href="#">SIM RACING</a>
+          <li>
+            <a href="#">SIM RACING</a>
             <ul class="dropdown">
               <li><a href="sim_tienda.html">Tienda</a></li>
               <li><a href="reservas.html">Reservas</a></li>
             </ul>
           </li>
-          <li><a href="login.html?rol=Proveedor">ACCEDER</a>
+          <li>
+            <a href="#">ACCEDER</a>
             <ul class="dropdown">
               <li><a href="login.html?rol=Proveedor">Proveedor</a></li>
               <li><a href="login.html?rol=Administrador">Administrador</a></li>
@@ -45,7 +48,7 @@
     </div>
   </header>
 
-  <!-- Login -->
+  <!-- Login centrado -->
   <div class="login-container">
     <div class="login-modal">
       <h2>Iniciar sesión</h2>
@@ -73,7 +76,7 @@
   </div>
 
   <script>
-    // Lectura del parámetro ?rol=Proveedor o ?rol=Administrador
+    // Leer rol de la URL (?rol=Proveedor o ?rol=Administrador)
     const params = new URLSearchParams(window.location.search);
     const initialRole = params.get('rol');
 
@@ -88,18 +91,18 @@
       loginError.textContent = "";
     }
 
-    // Botones de rol
-    providerBtn.addEventListener("click", () => highlightRole(providerBtn));
-    adminBtn.addEventListener("click", () => highlightRole(adminBtn));
-
-    // Si venimos con rol preseleccionado, lo activamos
+    // Si viene rol en URL, preseleccionar
     if (initialRole === "Proveedor") {
       highlightRole(providerBtn);
     } else if (initialRole === "Administrador") {
       highlightRole(adminBtn);
     }
 
-    // Validación del formulario
+    // Click manual (por si cambian de rol)
+    providerBtn.addEventListener("click", () => highlightRole(providerBtn));
+    adminBtn.addEventListener("click", () => highlightRole(adminBtn));
+
+    // Validación y redirección
     document.getElementById("loginForm").addEventListener("submit", (e) => {
       e.preventDefault();
       const email = document.getElementById("loginEmail").value.trim();
@@ -107,19 +110,19 @@
       const activeBtn = document.querySelector(".type-btn.active");
 
       if (!activeBtn) {
-        loginError.textContent = "Selecciona primero tu tipo de usuario.";
+        loginError.textContent = "Selecciona tu tipo de usuario.";
         return;
       }
       // DEMO: credenciales de prueba
       if (email === "demo@tupuntohd.com" && pass === "demo123") {
-        // Redirigir según rol
+        // Redirige según rol
         if (activeBtn === providerBtn) {
           window.location.href = "proveedor.html";
         } else {
           window.location.href = "admin.html";
         }
       } else {
-        loginError.textContent = "Credenciales inválidas. Intenta de nuevo.";
+        loginError.textContent = "Credenciales inválidas.";
       }
     });
   </script>
