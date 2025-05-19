@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acceder – TuPuntoHD</title>
+  <link rel="icon" href="assets/favicon.png" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css?v=5" />
+</head>
+<body>
+  <!-- Header idéntico al de index.html -->
+  <header class="site-header">
+    <div class="container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="TuPuntoHD Logo" class="logo" />
+      </a>
+      <nav class="nav">
+        <ul>
+          <li><a href="index.html">INICIO</a></li>
+          <li>
+            <a href="#">STREAMING</a>
+            <ul class="dropdown">
+              <li><a href="streaming_tienda.html">Tienda</a></li>
+              <li><a href="soporte_codigos.html">Soporte Códigos</a></li>
+            </ul>
+          </li>
+          <li>
+            <a href="#">SIM RACING</a>
+            <ul class="dropdown">
+              <li><a href="sim_tienda.html">Tienda</a></li>
+              <li><a href="reservas.html">Reservas</a></li>
+            </ul>
+          </li>
+          <li><a href="login.html">ACCEDER</a></li>
+          <li><a href="soporte.html">SOPORTE</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Contenedor del login -->
+  <div class="login-container">
+    <div class="login-modal">
+      <h2>Iniciar sesión</h2>
+      <div class="user-type">
+        <button id="providerBtn" class="type-btn">Proveedor</button>
+        <button id="adminBtn" class="type-btn">Administrador</button>
+      </div>
+      <form id="loginForm">
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="Correo electrónico"
+          required
+        />
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Contraseña"
+          required
+        />
+        <button type="submit" class="btn-primary">Iniciar Sesión</button>
+      </form>
+      <div id="loginError" class="error"></div>
+    </div>
+  </div>
+
+  <script>
+    let role = "";
+    document.getElementById("providerBtn").addEventListener("click", () => {
+      role = "Proveedor";
+      highlightRole("providerBtn");
+    });
+    document.getElementById("adminBtn").addEventListener("click", () => {
+      role = "Administrador";
+      highlightRole("adminBtn");
+    });
+
+    function highlightRole(id) {
+      document
+        .querySelectorAll(".type-btn")
+        .forEach((btn) => btn.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+      document.getElementById("loginError").textContent = "";
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const pass = document.getElementById("loginPassword").value;
+      const errorEl = document.getElementById("loginError");
+      errorEl.textContent = "";
+
+      if (!role) {
+        errorEl.textContent = "Selecciona primero tu tipo de usuario.";
+        return;
+      }
+      // TODO: Aquí llama a tu backend o Google Apps Script para validar credentials
+      // Demo de éxito/fallo:
+      if (email === "demo@tupuntohd.com" && pass === "demo123" && role) {
+        // Redirigir según rol
+        if (role === "Proveedor") {
+          window.location.href = "proveedor.html";
+        } else {
+          window.location.href = "admin.html";
+        }
+      } else {
+        errorEl.textContent = "Credenciales inválidas. Intenta de nuevo.";
+      }
+    });
+  </script>
+</body>
+</html>
