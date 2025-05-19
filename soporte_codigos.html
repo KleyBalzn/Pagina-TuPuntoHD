@@ -1,23 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Soporte Códigos – TuPuntoHD</title>
-  <link rel="icon" href="assets/favicon.png" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
-    rel="stylesheet"
-  />
-  <!-- Forzamos la versión 8 del CSS para invalidar caché -->
-  <link rel="stylesheet" href="style.css?v=8" />
+  <link rel="icon" href="assets/favicon.png">
+  <!-- ===== CSS INTEGRADO PARA DESCARTAR PROBLEMAS DE CARGA ===== -->
+  <style>
+    /* --- Reset y base --- */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Montserrat',sans-serif; color:#222; background:#f9f9f9; }
+    .container { width:90%; max-width:1200px; margin:0 auto; }
+
+    /* --- Header --- */
+    .site-header { position:sticky; top:0; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); z-index:100; box-shadow:0 2px 5px rgba(0,0,0,0.1); }
+    .site-header .container { display:flex; align-items:center; justify-content:space-between; padding:15px 0; }
+    .logo { height:50px; }
+
+    /* --- Nav --- */
+    .nav ul { list-style:none; display:flex; gap:30px; }
+    .nav ul li { position:relative; }
+    .nav ul li a { text-decoration:none; color:#222; font-weight:500; padding:8px 5px; transition:color .3s; }
+    .nav ul li a:hover { color:#0077cc; }
+    .nav ul li > .dropdown { display:none; position:absolute; top:100%; left:0; background:#fff; box-shadow:0 4px 8px rgba(0,0,0,0.1); border-radius:4px; margin:0; padding:0; list-style:none; }
+    .nav ul li:hover > .dropdown { display:block; }
+    .nav ul li > .dropdown li a { display:block; padding:10px 20px; white-space:nowrap; }
+
+    /* --- Search Section --- */
+    .search-section { background:#fff; padding:40px 0; border-top:1px solid #eee; }
+    .search-section h3 { font-size:1.5rem; margin-bottom:20px; color:#222; }
+    .search-box { display:flex; gap:10px; max-width:400px; margin-bottom:20px; }
+    .search-box input { flex:1; padding:10px; border:1px solid #ccc; border-radius:4px; }
+    .search-box button { padding:10px 20px; background:#0077cc; color:#fff; border:none; border-radius:4px; cursor:pointer; transition:background .3s; }
+    .search-box button:hover { background:#005fa3; }
+    .search-box button:disabled { opacity:0.6; cursor:not-allowed; }
+    .spinner { width:20px; height:20px; border:3px solid rgba(0,0,0,0.1); border-top-color:#0077cc; border-radius:50%; display:inline-block; margin-left:10px; vertical-align:middle; animation:spin .8s linear infinite; visibility:hidden; }
+    .spinner[aria-hidden="false"] { visibility:visible; }
+    @keyframes spin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+    .search-result { margin-top:15px; font-size:1rem; color:#222; }
+    .search-result .result-card { padding:20px; border:1px solid #ddd; border-radius:4px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+    .search-result .error { margin-top:15px; color:#d32f2f; font-weight:500; }
+    /* WhatsApp flotante */
+    .whatsapp-float { position:fixed; width:50px; height:50px; bottom:20px; right:20px; z-index:1000; cursor:pointer; }
+    .whatsapp-float img { width:100%; height:100%; }
+  </style>
 </head>
 <body>
+
   <!-- Header -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="logo-link">
-        <img src="assets/logo.png" alt="TuPuntoHD Logo" class="logo" />
+        <img src="assets/logo.png" alt="TuPuntoHD Logo" class="logo">
       </a>
       <nav class="nav">
         <ul>
@@ -54,12 +88,7 @@
     <section class="search-section">
       <h3>Busca tu código de hogar</h3>
       <div class="search-box">
-        <input
-          type="email"
-          id="emailInput"
-          placeholder="correo@ejemplo.com"
-          required
-        />
+        <input type="email" id="emailInput" placeholder="correo@ejemplo.com" required>
         <button id="searchBtn">Buscar código</button>
         <div id="spinner" class="spinner" aria-hidden="true"></div>
       </div>
@@ -67,13 +96,20 @@
     </section>
   </main>
 
-  <!-- Funcionalidad JavaScript -->
+  <!-- WhatsApp flotante -->
+  <a href="https://wa.me/573206201242" class="whatsapp-float" target="_blank">
+    <img src="assets/whatsapp-icon.png" alt="WhatsApp">
+  </a>
+
+  <!-- Script -->
   <script>
-    const btn      = document.getElementById('searchBtn');
-    const input    = document.getElementById('emailInput');
-    const spinner  = document.getElementById('spinner');
+    const btn = document.getElementById('searchBtn');
+    const input = document.getElementById('emailInput');
+    const spinner = document.getElementById('spinner');
     const resultEl = document.getElementById('searchResult');
-    const emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
+
+    // Patrón de email correcto
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     btn.addEventListener('click', async () => {
       const email = input.value.trim();
@@ -95,22 +131,18 @@
 
       try {
         const resp = await fetch(
-          'https://script.google.com/macros/s/AKfycby07GIqi6KnQRwWilxdzIS7sDLJ3gdSLVZ552NIZzuEbNKjgk11cGfWacGuODuEn7-ADA/exec?email=' +
-          encodeURIComponent(email)
+          'https://script.google.com/macros/s/AKfycby07GIqi6KnQRwWilxdzIS7sDLJ3gdSLVZ552NIZzuEbNKjgk11cGfWacGuODuEn7-ADA/exec?email=' 
+          + encodeURIComponent(email)
         );
         const data = await resp.json();
 
         if (data.link) {
           resultEl.innerHTML =
             '<div class="result-card">' +
-             '<a href="' + data.link + '" target="_blank" class="btn-primary">' +
-             'Ver mi código</a>' +
+              '<a href="' + data.link + '" target="_blank" class="btn-primary">Ver mi código</a>' +
             '</div>';
         } else {
-          resultEl.innerHTML =
-            '<div class="error">' +
-             (data.error || 'No se encontró ningún enlace.') +
-            '</div>';
+          resultEl.innerHTML = '<div class="error">' + (data.error || 'No se encontró ningún enlace.') + '</div>';
         }
       } catch (err) {
         console.error(err);
