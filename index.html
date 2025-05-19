@@ -51,6 +51,29 @@
       <h3>Bienvenido a TuPuntoHD</h3>
       <p>Accede a tus códigos de Netflix al instante, renueva tus servicios y gestiona todo desde un mismo lugar.</p>
     </section>
+    <section class="search-section">
+      <h3>Busca tu código de hogar</h3>
+      <div class="search-box">
+        <input type="email" id="emailInput" placeholder="Ingresa tu correo electrónico">
+        <button id="searchBtn">Buscar código</button>
+      </div>
+      <div id="searchResult"></div>
+    </section>
   </main>
+  <script>
+    document.getElementById('searchBtn').addEventListener('click', () => {
+      const email = document.getElementById('emailInput').value.trim();
+      const resultEl = document.getElementById('searchResult');
+      if (!email) {
+        resultEl.textContent = 'Por favor ingresa un correo.';
+        return;
+      }
+      resultEl.textContent = 'Buscando código más reciente para ' + email + '...';
+      // TODO: reemplazar con llamada real a backend
+      setTimeout(() => {
+        resultEl.textContent = 'Código encontrado: 1234';
+      }, 2000);
+    });
+  </script>
 </body>
 </html>
