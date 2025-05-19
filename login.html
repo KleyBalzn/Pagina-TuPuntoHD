@@ -9,10 +9,10 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
     rel="stylesheet"
   />
-  <link rel="stylesheet" href="style.css?v=6" />
+  <link rel="stylesheet" href="style.css?v=7" />
 </head>
 <body>
-  <!-- Header -->
+  <!-- Header igual que en index.html -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="logo-link">
@@ -48,14 +48,10 @@
     </div>
   </header>
 
-  <!-- Login centrado -->
+  <!-- Login centrado y ampliado -->
   <div class="login-container">
     <div class="login-modal">
-      <h2>Iniciar sesión</h2>
-      <div class="user-type">
-        <button id="providerBtn" class="type-btn">Proveedor</button>
-        <button id="adminBtn" class="type-btn">Administrador</button>
-      </div>
+      <h2 id="loginTitle">Iniciar sesión</h2>
       <form id="loginForm">
         <input
           type="email"
@@ -76,53 +72,37 @@
   </div>
 
   <script>
-    // Leer rol de la URL (?rol=Proveedor o ?rol=Administrador)
+    // 1. Leer rol de la URL, default si no viene
     const params = new URLSearchParams(window.location.search);
-    const initialRole = params.get('rol');
+    const role = params.get('rol') || '';
 
-    const providerBtn = document.getElementById("providerBtn");
-    const adminBtn    = document.getElementById("adminBtn");
-    const loginError  = document.getElementById("loginError");
+    const titleEl    = document.getElementById('loginTitle');
+    const errorEl    = document.getElementById('loginError');
+    const form       = document.getElementById('loginForm');
 
-    function highlightRole(btn) {
-      providerBtn.classList.remove("active");
-      adminBtn.classList.remove("active");
-      btn.classList.add("active");
-      loginError.textContent = "";
+    // 2. Si no hay rol válido, mostrar error y deshabilitar form
+    if (role !== 'Proveedor' && role !== 'Administrador') {
+      titleEl.textContent = 'Rol no especificado';
+      errorEl.textContent = 'Debes acceder desde el menú como Proveedor o Administrador.';
+      form.querySelector('button').disabled = true;
+    } else {
+      // 3. Ajustar título con el rol
+      titleEl.textContent = `Iniciar sesión – ${role}`;
     }
 
-    // Si viene rol en URL, preseleccionar
-    if (initialRole === "Proveedor") {
-      highlightRole(providerBtn);
-    } else if (initialRole === "Administrador") {
-      highlightRole(adminBtn);
-    }
-
-    // Click manual (por si cambian de rol)
-    providerBtn.addEventListener("click", () => highlightRole(providerBtn));
-    adminBtn.addEventListener("click", () => highlightRole(adminBtn));
-
-    // Validación y redirección
-    document.getElementById("loginForm").addEventListener("submit", (e) => {
+    // 4. Validación del formulario
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const email = document.getElementById("loginEmail").value.trim();
-      const pass  = document.getElementById("loginPassword").value;
-      const activeBtn = document.querySelector(".type-btn.active");
+      if (!role) return;
 
-      if (!activeBtn) {
-        loginError.textContent = "Selecciona tu tipo de usuario.";
-        return;
-      }
-      // DEMO: credenciales de prueba
-      if (email === "demo@tupuntohd.com" && pass === "demo123") {
-        // Redirige según rol
-        if (activeBtn === providerBtn) {
-          window.location.href = "proveedor.html";
-        } else {
-          window.location.href = "admin.html";
-        }
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass  = document.getElementById('loginPassword').value;
+
+      // DEMO de autenticación
+      if (email === 'demo@tupuntohd.com' && pass === 'demo123') {
+        window.location.href = role === 'Proveedor' ? 'proveedor.html' : 'admin.html';
       } else {
-        loginError.textContent = "Credenciales inválidas.";
+        errorEl.textContent = 'Credenciales inválidas.';
       }
     });
   </script>
