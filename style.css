@@ -1,7 +1,19 @@
 /* Reset y base */
-* { margin:0; padding:0; box-sizing:border-box; }
-body { font-family:'Montserrat',sans-serif; color:#222; background:#f9f9f9; }
-.container { width:90%; max-width:1200px; margin:0 auto; }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Montserrat', sans-serif;
+  color: #222;
+  background: #f9f9f9;
+}
+.container {
+  width: 90%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
 
 /* Header */
 .site-header {
@@ -41,7 +53,7 @@ body { font-family:'Montserrat',sans-serif; color:#222; background:#f9f9f9; }
 .nav ul li a:hover {
   color: #0077cc;
 }
-/* Oculta los submenús por defecto */
+/* Submenú oculto */
 .nav ul li > .dropdown {
   display: none;
   position: absolute;
@@ -50,18 +62,18 @@ body { font-family:'Montserrat',sans-serif; color:#222; background:#f9f9f9; }
   background: #fff;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   border-radius: 4px;
-  margin: 0;
   padding: 0;
+  margin: 0;
   list-style: none;
   z-index: 100;
 }
-/* Estilo de ítems del submenú */
+/* Ítems del submenú */
 .nav ul li > .dropdown li a {
   display: block;
   padding: 10px 20px;
   white-space: nowrap;
 }
-/* Muestra el submenú al pasar el mouse */
+/* Mostrar submenú al hover */
 .nav ul li:hover > .dropdown {
   display: block;
 }
@@ -153,6 +165,10 @@ main {
 .search-box button:hover {
   background: #005fa3;
 }
+.search-box button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
 
 /* Spinner giratorio */
 .spinner {
@@ -170,26 +186,17 @@ main {
 .spinner[aria-hidden="false"] {
   visibility: visible;
 }
-
-/* Animación del spinner */
 @keyframes spin {
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
 
-/* Botón deshabilitado */
-.search-box button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Resultado de búsqueda por defecto */
+/* Resultado de búsqueda */
 .search-result {
   margin-top: 15px;
   font-size: 1rem;
   color: #222;
 }
-
 /* Caja de resultado exitoso */
 .search-result .result-card {
   padding: 20px;
@@ -199,7 +206,6 @@ main {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-top: 15px;
 }
-
 /* Mensajes de error */
 .search-result .error {
   margin-top: 15px;
