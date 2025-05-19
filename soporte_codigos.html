@@ -1,112 +1,65 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>Soporte Códigos – TuPuntoHD</title>
-  <link rel="icon" href="assets/favicon.png" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
-    rel="stylesheet"
-  />
-  <link rel="stylesheet" href="style.css?v=6" />
+  <base target="_top">
+  <style>
+    /* tu CSS mínimo aquí o vía style.css en GitHub */
+    body { font-family: sans-serif; background: #f9f9f9; padding: 20px; }
+    .spinner { display: inline-block; width:20px; height:20px; border:3px solid #eee; border-top-color:#0077cc; border-radius:50%; animation:spin .8s linear infinite; visibility:hidden; }
+    .spinner[aria-hidden="false"] { visibility:visible; }
+    @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg);} }
+    .error { color:#d32f2f; margin-top:10px; }
+    .result-card { margin-top:15px; }
+    .btn-primary { background:#000; color:#fff; padding:10px 20px; text-decoration:none; border-radius:4px; }
+    .btn-primary:hover { background:#444; }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container">
-      <a href="index.html" class="logo-link">
-        <img src="assets/logo.png" alt="TuPuntoHD Logo" class="logo" />
-      </a>
-      <nav class="nav">
-        <ul>
-          <li><a href="index.html">INICIO</a></li>
-          <li><a href="streaming_tienda.html">STREAMING</a></li>
-          <li><a href="sim_tienda.html">SIM RACING</a></li>
-          <li><a href="login.html?rol=Proveedor">ACCEDER</a></li>
-          <li><a href="soporte_codigos.html">SOPORTE CÓDIGOS</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <main class="container">
-    <section class="search-section">
-      <h3>Busca tu código de hogar</h3>
-      <div class="search-box">
-        <input
-          type="email"
-          id="emailInput"
-          placeholder="correo@ejemplo.com"
-          required
-        />
-        <button id="searchBtn">Buscar código</button>
-        <div id="spinner" class="spinner" aria-hidden="true"></div>
-      </div>
-      <div id="searchResult" class="search-result"></div>
-    </section>
-  </main>
+  <h3>Busca tu código de hogar</h3>
+  <input type="email" id="emailInput" placeholder="correo@ejemplo.com" style="padding:8px; width:250px;">
+  <button id="searchBtn" style="padding:8px 12px;">Buscar código</button>
+  <div id="spinner" class="spinner" aria-hidden="true"></div>
+  <div id="searchResult"></div>
 
   <script>
-    const MAILNESIA_USER = 'tupuntohd'; // sin @mailnesia.com
-    const btn      = document.getElementById('searchBtn');
-    const input    = document.getElementById('emailInput');
-    const spinner  = document.getElementById('spinner');
+    const btn = document.getElementById('searchBtn');
+    const input = document.getElementById('emailInput');
+    const spinner = document.getElementById('spinner');
     const resultEl = document.getElementById('searchResult');
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     btn.addEventListener('click', async () => {
       const email = input.value.trim();
       resultEl.innerHTML = '';
-
-      // Validación de correo
       if (!email) {
-        resultEl.innerHTML = '<div class="error">Por favor ingresa un correo.</div>';
-        return;
+        return resultEl.innerHTML = '<div class="error">Por favor ingresa un correo.</div>';
       }
       if (!emailPattern.test(email)) {
-        resultEl.innerHTML = '<div class="error">Formato de correo inválido.</div>';
-        return;
+        return resultEl.innerHTML = '<div class="error">Formato de correo inválido.</div>';
       }
 
-      // Mostrar spinner
       btn.disabled = true;
       spinner.setAttribute('aria-hidden','false');
 
       try {
-        // 1) Obtengo todos los mensajes de Mailnesia
-        const resp = await fetch(
-          `https://mailnesia.com/api/mailbox/${MAILNESIA_USER}`
-        );
-        if (!resp.ok) throw new Error('No se pudo conectar a Mailnesia');
-        const mails = await resp.json();
-        if (!mails.length) {
-          throw new Error('Aún no hay correos en Mailnesia');
+        // Aquí llamamos a la Web App con GET
+        const url = `${location.origin}${location.pathname}?email=${encodeURIComponent(email)}`;
+        const resp = await fetch(url, { method: 'GET' });
+        const data = await resp.json();
+
+        if (data.link) {
+          resultEl.innerHTML = `
+            <div class="result-card">
+              <a href="${data.link}" target="_blank" class="btn-primary">Ver mi código</a>
+            </div>`;
+        } else {
+          resultEl.innerHTML = `<div class="error">${data.error||'No se encontró ningún enlace.'}</div>`;
         }
-
-        // 2) Filtrar por correo original dentro del HTML del mensaje
-        //    Si no coincide ninguno, tomamos el más reciente
-        const candidates = mails.filter(m =>
-          (m.html || '').includes(email)
-        );
-        const mail = candidates.length ? candidates[0] : mails[0];
-
-        // 3) Extraer la primera URL del contenido HTML
-        const content = mail.html || mail.body || '';
-        const match = content.match(/https?:\/\/[^\s"'<>]+/);
-        if (!match) {
-          throw new Error('No encontré ningún enlace en el correo.');
-        }
-
-        // 4) Mostrar el botón al usuario
-        resultEl.innerHTML =
-          `<div class="result-card">
-             <a href="${match[0]}" target="_blank" class="btn-primary">
-               Ver mi código
-             </a>
-           </div>`;
       } catch (err) {
         console.error(err);
-        resultEl.innerHTML = `<div class="error">${err.message}</div>`;
+        resultEl.innerHTML = `<div class="error">Error de red. Intenta más tarde.</div>`;
       } finally {
         btn.disabled = false;
         spinner.setAttribute('aria-hidden','true');
