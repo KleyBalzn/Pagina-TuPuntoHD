@@ -29,7 +29,7 @@
     <section class="search-section">
       <h3>Busca tu código de hogar</h3>
       <div class="search-box">
-        <input type="email" id="emailInput" placeholder="Ingresa tu correo electrónico">
+        <input type="email" id="emailInput" placeholder="correo@ejemplo.com" required>
         <button id="searchBtn">Buscar código</button>
         <div id="spinner" class="spinner" aria-hidden="true"></div>
       </div>
@@ -42,19 +42,25 @@
     const input   = document.getElementById('emailInput');
     const spinner = document.getElementById('spinner');
     const resultEl= document.getElementById('searchResult');
+    const emailPattern = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
 
     btn.addEventListener('click', async () => {
       const email = input.value.trim();
-      resultEl.textContent = '';
+      resultEl.innerHTML = '';
+
+      // Validación
       if (!email) {
-        resultEl.textContent = 'Por favor ingresa un correo.';
+        resultEl.innerHTML = '<div class="error">Por favor ingresa un correo.</div>';
+        return;
+      }
+      if (!emailPattern.test(email)) {
+        resultEl.innerHTML = '<div class="error">Formato de correo inválido.</div>';
         return;
       }
 
-      // Preparar UI
+      // UI de carga
       btn.disabled = true;
       spinner.setAttribute('aria-hidden','false');
-      resultEl.textContent = 'Buscando tu código…';
 
       try {
         const response = await fetch(
@@ -65,13 +71,16 @@
 
         if (data.link) {
           resultEl.innerHTML =
-            `<a href="${data.link}" target="_blank" class="btn-primary">Ver mi código</a>`;
+            '<div class="result-card"><a href="' + data.link +
+            '" target="_blank" class="btn-primary">Ver mi código</a></div>';
         } else {
-          resultEl.textContent = data.error || 'No se encontró ningún enlace.';
+          resultEl.innerHTML = '<div class="error">' +
+            (data.error || 'No se encontró ningún enlace.') +
+            '</div>';
         }
       } catch (err) {
         console.error(err);
-        resultEl.textContent = 'Error al buscar el código. Intenta más tarde.';
+        resultEl.innerHTML = '<div class="error">Error de red. Intenta más tarde.</div>';
       } finally {
         btn.disabled = false;
         spinner.setAttribute('aria-hidden','true');
