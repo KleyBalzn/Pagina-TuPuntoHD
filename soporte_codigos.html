@@ -9,11 +9,9 @@
     href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;500;700&display=swap"
     rel="stylesheet"
   />
-  <!-- Asegúrate de subir la versión correcta -->
   <link rel="stylesheet" href="style.css?v=5" />
 </head>
 <body>
-  <!-- Header -->
   <header class="site-header">
     <div class="container">
       <a href="index.html" class="logo-link">
@@ -31,7 +29,6 @@
     </div>
   </header>
 
-  <!-- Buscador de códigos -->
   <main class="container">
     <section class="search-section">
       <h3>Busca tu código de hogar</h3>
@@ -49,7 +46,6 @@
     </section>
   </main>
 
-  <!-- Funcionalidad JavaScript -->
   <script>
     const btn      = document.getElementById('searchBtn');
     const input    = document.getElementById('emailInput');
@@ -61,7 +57,6 @@
       const email = input.value.trim();
       resultEl.innerHTML = '';
 
-      // Validación
       if (!email) {
         resultEl.innerHTML = '<div class="error">Por favor ingresa un correo.</div>';
         return;
@@ -71,28 +66,25 @@
         return;
       }
 
-      // UI de carga
       btn.disabled = true;
       spinner.setAttribute('aria-hidden','false');
 
       try {
         const resp = await fetch(
-          'https://script.google.com/macros/s/AKfycbxMmtHJ9YRE0lbSfe4PzJaz--Z2bha7KiyPdOoK6CDJbTbgVANxQsnuyqviJbaHQeSvrA/exec?email='
-          + encodeURIComponent(email)
+          'https://script.google.com/macros/s/AKfycbynueoC5J7O7hfRO9C1Q2wdPNdHgaXurOmfF9KPZfyBYg_OowJq2nHQEU2hLuA3JqTtrw/exec?email=' + encodeURIComponent(email)
         );
         const data = await resp.json();
 
         if (data.link) {
           resultEl.innerHTML =
-            '<div class="result-card">' +
-             '<a href="' + data.link + '" target="_blank" class="btn-primary">' +
-             'Ver mi código</a>' +
-            '</div>';
+            `<div class="result-card">
+               <a href="${data.link}" target="_blank" class="btn-primary">
+                 Ver mi código
+               </a>
+             </div>`;
         } else {
           resultEl.innerHTML =
-            '<div class="error">' +
-             (data.error || 'No se encontró ningún enlace.') +
-            '</div>';
+            `<div class="error">${data.error || 'No se encontró ningún enlace.'}</div>`;
         }
       } catch (err) {
         console.error(err);
